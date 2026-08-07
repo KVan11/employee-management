@@ -12,14 +12,17 @@ public class UtilityService {
 
     private final EmployeeCodeFormatter employeeCodeFormatter;
 
-    public UtilityService(EmployeeSequenceRepository employeeSequenceRepository,
-            EmployeeCodeFormatter employeeCodeFormatter) {
+    public UtilityService(EmployeeSequenceRepository employeeSequenceRepository, EmployeeCodeFormatter employeeCodeFormatter) {
         this.employeeSequenceRepository = employeeSequenceRepository;
         this.employeeCodeFormatter = employeeCodeFormatter;
     }
 
     public String generateEmployeeCode() {
-        return employeeCodeFormatter.format(employeeSequenceRepository.nextSequence());
+        return generateEmployeeCode(employeeSequenceRepository.nextSequence());
+    }
+
+    public String generateEmployeeCode(int sequence) {
+        return employeeCodeFormatter.format(sequence);
     }
 
     public String formatEmployeeName(String name) {
