@@ -2,25 +2,27 @@ package com.example.employee_management.service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.example.employee_management.dto.EmployeeRequest;
-import com.example.employee_management.model.Employee;
+import com.example.employee_management.entity.Department;
+import com.example.employee_management.entity.Employee;
+import com.example.employee_management.repository.DepartmentRepository;
 import com.example.employee_management.repository.EmployeeRepository;
-import com.example.employee_management.repository.EmployeeSequenceRepository;
 
 @Service
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
-    private final EmployeeSequenceRepository employeeSequenceRepository;
-    private final UtilityService utilityService;
+    private final DepartmentRepository departmentRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository, EmployeeSequenceRepository employeeSequenceRepository, UtilityService utilityService) {
-
+    public EmployeeService(EmployeeRepository employeeRepository, DepartmentRepository departmentRepository) {
         this.employeeRepository = employeeRepository;
-        this.employeeSequenceRepository = employeeSequenceRepository;
-        this.utilityService = utilityService;
+        this.departmentRepository = departmentRepository;
     }
+
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
@@ -29,24 +31,44 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
-    public List<Employee> searchEmployees(String keyword) {
-        return employeeRepository.findByKeyword(keyword);
-    }
-
     public Employee addEmployee(EmployeeRequest request) {
-
-        Integer id = employeeSequenceRepository.nextSequence();
-
-        String code = utilityService.generateEmployeeCode(id);
+        Department department = findDepartmentById(request.getDepartmentId());
 
         Employee employee = new Employee();
-
-        employee.setId(id);
-        employee.setCode(code);
-        employee.setName(utilityService.formatEmployeeName(request.getName()));
+        employee.setName(request.getName());
         employee.setEmail(request.getEmail());
-        employee.setDepartment(request.getDepartment());
+        employee.setDepartment(department);
 
         return employeeRepository.save(employee);
+    }
+
+    public Employee updateEmployee(Integer id, EmployeeRequest request) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+
+        Department department = findDepartmentById(request.getDepartmentId());
+
+        employee.setName(request.getName());
+        employee.setEmail(request.getEmail());
+        employee.setDepartment(department);
+
+        return employeeRepository.save(employee);
+    }
+
+    public void delete(Integer id) {
+        employeeRepository.deleteById(id);
+    }
+
+    public List<Employee> searchByName(String keyword) {
+        return employeeRepository.findByNameContainingIgnoreCase(keyword);
+    }
+
+    public List<Employee> searchByDepartment(String keyword) {
+        return employeeRepository.findByDepartment_NameContainingIgnoreCase(keyword);
+    }
+
+    private Department findDepartmentById(Integer departmentId) {
+        return departmentRepository.findById(departmentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Department not found"));
     }
 }
