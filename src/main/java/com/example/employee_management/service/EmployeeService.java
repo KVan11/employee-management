@@ -56,7 +56,8 @@ public class EmployeeService {
     }
 
     public void delete(Integer id) {
-        employeeRepository.deleteById(id);
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        employeeRepository.delete(employee);
     }
 
     public List<Employee> searchByName(String keyword) {
