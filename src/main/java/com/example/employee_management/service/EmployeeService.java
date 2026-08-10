@@ -3,6 +3,9 @@ package com.example.employee_management.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,6 +18,7 @@ import com.example.employee_management.repository.EmployeeRepository;
 
 @Service
 public class EmployeeService {
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
 
@@ -39,12 +43,18 @@ public class EmployeeService {
         employee.setEmail(request.getEmail());
         employee.setDepartment(department);
 
-        return employeeRepository.save(employee);
+        Employee savedEmployee = employeeRepository.save(employee);
+
+        logger.info("Added employee: id={}, name={}, email={}",
+                savedEmployee.getId(),
+                savedEmployee.getName(),
+                savedEmployee.getEmail());
+
+        return savedEmployee;
     }
 
     public Employee updateEmployee(Integer id, EmployeeRequest request) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
         Department department = findDepartmentById(request.getDepartmentId());
 
@@ -52,12 +62,25 @@ public class EmployeeService {
         employee.setEmail(request.getEmail());
         employee.setDepartment(department);
 
-        return employeeRepository.save(employee);
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        logger.info("Updated employee: id={}, name={}, email={}",
+                updatedEmployee.getId(),
+                updatedEmployee.getName(),
+                updatedEmployee.getEmail());
+
+        return updatedEmployee;
     }
 
     public void delete(Integer id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
-        employeeRepository.delete(employee);
+
+    employeeRepository.delete(employee);
+
+    logger.info("Deleted employee: id={}, name={}, email={}",
+            employee.getId(),
+            employee.getName(),
+            employee.getEmail());
     }
 
     public List<Employee> searchByName(String keyword) {
