@@ -37,6 +37,11 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAllEmployees());
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<Long> getEmployeeCount() {
+        return ResponseEntity.ok(employeeService.getEmployeeCount());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Integer id) {
         return employeeService.getEmployeeById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.example.employee_management.dto.EmployeeRequest;
 import com.example.employee_management.entity.Department;
@@ -35,6 +37,13 @@ public class EmployeeService {
         return employeeRepository.findById(id);
     }
 
+    @Cacheable("employeeCount")
+    public long getEmployeeCount() {
+        logger.info("Querying employee count from database");
+        return employeeRepository.count();
+    }
+
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public Employee addEmployee(EmployeeRequest request) {
         Department department = findDepartmentById(request.getDepartmentId());
 
@@ -53,6 +62,7 @@ public class EmployeeService {
         return savedEmployee;
     }
 
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public Employee updateEmployee(Integer id, EmployeeRequest request) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
@@ -72,6 +82,7 @@ public class EmployeeService {
         return updatedEmployee;
     }
 
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public void delete(Integer id) {
         Employee employee = employeeRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employee not found"));
 
