@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.employee_management.dto.DepartmentEmployeeCount;
 import com.example.employee_management.dto.EmployeeRequest;
 import com.example.employee_management.entity.Department;
 import com.example.employee_management.entity.Employee;
@@ -88,5 +89,19 @@ public class EmployeeWebController {
         model.addAttribute("department", department);
 
         return "employees/search";
+    }
+    
+    @GetMapping("/statistics")
+    public String statistics(Model model) {
+
+        long totalEmployees = employeeService.getEmployeeCount();
+
+        List<DepartmentEmployeeCount> statistics =
+                employeeService.getEmployeeCountByDepartment();
+
+        model.addAttribute("totalEmployees", totalEmployees);
+        model.addAttribute("statistics", statistics);
+
+        return "employees/statistics";
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.employee_management.dto.DepartmentEmployeeCount;
 import com.example.employee_management.dto.EmployeeRequest;
 import com.example.employee_management.entity.Employee;
 import com.example.employee_management.service.EmployeeService;
@@ -24,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/employees")
+@RequestMapping("/api/employees")
 public class EmployeeController {
     private final EmployeeService employeeService;
 
@@ -40,6 +41,11 @@ public class EmployeeController {
     @GetMapping("/count")
     public ResponseEntity<Long> getEmployeeCount() {
         return ResponseEntity.ok(employeeService.getEmployeeCount());
+    }
+
+    @GetMapping("/statistics")
+    public ResponseEntity<List<DepartmentEmployeeCount>> getStatistics() {
+        return ResponseEntity.ok(employeeService.getEmployeeCountByDepartment());
     }
 
     @GetMapping("/{id}")

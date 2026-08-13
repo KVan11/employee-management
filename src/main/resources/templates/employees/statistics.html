@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Statistics</title>
+</head>
+
+<body>
+
+<h1>Employee Statistics</h1>
+
+<h2>Tổng số nhân viên</h2>
+
+<p>
+    Tổng số nhân viên:
+    <strong th:text="${totalEmployees}">0</strong>
+</p>
+
+<h2>Số nhân viên theo phòng ban</h2>
+
+<table border="1">
+    <thead>
+        <tr>
+            <th>Phòng ban</th>
+            <th>Số nhân viên</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr th:each="item : ${statistics}">
+            <td th:text="${item.departmentName}">
+                IT
+            </td>
+
+            <td th:text="${item.employeeCount}">
+                0
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+
+</html>

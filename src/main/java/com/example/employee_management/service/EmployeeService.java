@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
+import com.example.employee_management.dto.DepartmentEmployeeCount;
 import com.example.employee_management.dto.EmployeeRequest;
 import com.example.employee_management.entity.Department;
 import com.example.employee_management.entity.Employee;
@@ -41,6 +42,10 @@ public class EmployeeService {
     public long getEmployeeCount() {
         logger.info("Querying employee count from database");
         return employeeRepository.count();
+    }
+
+    public List<DepartmentEmployeeCount> getEmployeeCountByDepartment() {
+        return employeeRepository.countEmployeesByDepartment();
     }
 
     @CacheEvict(value = "employeeCount", allEntries = true)
